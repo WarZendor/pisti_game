@@ -17,7 +17,6 @@ public class Main {
             - See high scores.
             - Exit.
 
-
             New options might be added in the future. For now these will suffice.
             */
             System.out.println("PISTI\n\n1 - New Game Against AI\n2 - See High Scores\n3 - Exit\n");
@@ -32,7 +31,7 @@ public class Main {
                 case 3:
                     System.out.println("Exiting");
                     continue_ = false;
-                    break; // TODO Unnecessary?
+                    break;
             }
         }
     }
@@ -55,9 +54,38 @@ public class Main {
         26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38
         39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
 
-        This made me realize I should make a method that return card with suit and number from a value
-
          */
+
+        /*
+        Lists that will be used in game:
+        - Deck
+        - Players hand
+        - Cards taken by player
+        - Pistis taken by player
+        - Everything on top but for opponent
+         */
+        Scanner sc = new Scanner(System.in);
+
+        boolean playerIsDealer = false;
+        System.out.println("Welcome, do you want to be the dealer?");
+        System.out.println("\n1 - Of course.\n2 - I'll pass this time.");
+        int request = sc.nextInt();
+        System.out.println("It's a new batch of playing cards!");
+        if (playerIsDealer) {
+            System.out.println("You shuffled the deck.");
+            System.out.println("You let your opponent to cut the deck.");
+        }
+        else {
+            System.out.println("Your opponent shuffled the deck.");
+            System.out.println("You randomly cut the deck.");
+        }
+
+        // Creating the deck
+        int[] deck = new int[52];
+        for (int i = 0; i < deck.length; i++) deck[i] = i;
+
+        // Shuffling the deck
+        deck = deckShuffle(deck);
     }
 
     public static void showHighScores() {
@@ -65,27 +93,30 @@ public class Main {
 
     }
 
+    public static int[] deckCut(int[] deck) {
+        Random rand = new Random();
+        int random = rand.nextInt(2, 50);
+        int[] cutDeck = new int[deck.length];
+        for (int i = 0; i < random; i++) cutDeck[i] = deck[deck.length - random + i];
+        for (int i = random; i < deck.length; i++) cutDeck[i] = deck[i - random];
+        return cutDeck;
+    }
 
     public static int[] deckShuffle(int[] deck) {
-        // Shuffles the deck.
-        // Exchange the values between two random indexes. Do this a million times.
-        // Won't be used more than once per game.
         Random rand = new Random();
-        int temp, index1, index2, length;
-        length = deck.length; // Improves performance, I guess.
+        int temp, i1, i2;
         for(int i = 0; i < 1000000; i++) {
-            index1 = rand.nextInt(length);
-            index2 = rand.nextInt(length);
-            temp = deck[index1];
-            deck[index1] = deck[index2];
-            deck[index2] = temp;
+            i1 = rand.nextInt(deck.length);
+            i2 = rand.nextInt(deck.length);
+            temp = deck[i1];
+            deck[i1] = deck[i2];
+            deck[i2] = temp;
         }
         return deck;
     }
 
-    public static String valueToCard(int i) {
-        // Returns suit and number as a string for easier reading.
-        String suit = "Error"; // Refuses to compile without this initialization.
+    public static String valueToSuitAndCard(int i) {
+        String suit;
         switch (i / 13) {
             case 0:
                 suit = "♠";
@@ -99,9 +130,11 @@ public class Main {
             case 3:
                 suit = "♦";
                 break;
+            default:
+                suit = "Error";
         }
 
-        String card = "Error"; // Refuses to compile without this initialization.
+        String card;
         switch (i % 13) {
             case 0:
                 card = "A";
@@ -142,6 +175,8 @@ public class Main {
             case 12:
                 card = "K";
                 break;
+            default:
+                 card = "Error";
         }
         return suit + card;
     }
@@ -164,6 +199,6 @@ public class Main {
 
     public static void valueToCardTest() {
         // Used to test valueToCard method. Useless at the moment.
-        for(int i = 0; i < 52; i++) System.out.print(valueToCard(i) + " ");
+        for(int i = 0; i < 52; i++) System.out.print(valueToSuitAndCard(i) + " ");
     }
 }
