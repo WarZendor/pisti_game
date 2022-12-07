@@ -65,27 +65,49 @@ public class Main {
         - Everything on top but for opponent
          */
         Scanner sc = new Scanner(System.in);
+        boolean playerIsDealer;
 
-        boolean playerIsDealer = false;
-        System.out.println("Welcome, do you want to be the dealer?");
-        System.out.println("\n1 - Of course.\n2 - I'll pass this time.");
+        System.out.println("Welcome, do you want to be the dealer?\n1 - Of course.\n2 - I'll pass this time.");
         int request = sc.nextInt();
-        System.out.println("It's a new batch of playing cards!");
-        if (playerIsDealer) {
-            System.out.println("You shuffled the deck.");
-            System.out.println("You let your opponent to cut the deck.");
-        }
-        else {
-            System.out.println("Your opponent shuffled the deck.");
-            System.out.println("You randomly cut the deck.");
-        }
 
-        // Creating the deck
+        if (request == 1) playerIsDealer = true;
+        else playerIsDealer = false;
+
+        if (playerIsDealer) System.out.println("You shuffled the deck.\nYour opponent to cut the deck.");
+        else System.out.println("Your opponent shuffled the deck.\nYou randomly cut the deck.");
+
+        // Creating the deck.
         int[] deck = new int[52];
         for (int i = 0; i < deck.length; i++) deck[i] = i;
 
-        // Shuffling the deck
+        // Shuffling the deck.
         deck = deckShuffle(deck);
+
+        // Cutting the deck.
+        deck = deckCut(deck);
+
+        /*
+        How the game sequence should be?
+        Beginning of a list is the bottom, end of a list is top.
+        All cards are taken from the top.
+
+        3 cards needs to be not showed to players, last one is the beginning card.
+        I want to constantly show the cards on the table from top to bottom to player.
+        Each player is given 4 cards. Which cards each player will have can be predetermined.
+        Create two lists with size of 4 for each player.
+        Replace whichever card played with -1, that means there is no card.
+        There will be 6 rounds total as 48/8 is 6.
+        First 3 cards shouldn't be shown. This is requirement.
+         */
+        int[] playerHand = new int[4];
+        int[] opponentHand = new int[4];
+        int[] playerCollectedCards = new int[52];
+        int[] opponentCollectedCards = new int[52];
+        int[] playerPistis = new int[52];
+        int[] opponentPistis = new int[52];
+        int[] cardsOnTable = new int[52];
+
+
     }
 
     public static void showHighScores() {
