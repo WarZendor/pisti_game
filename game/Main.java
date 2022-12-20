@@ -87,32 +87,125 @@ public class Main {
         deck = deckCut(deck);
 
         /*
-        How the game sequence should be?
-        Beginning of a list is the bottom, end of a list is top.
-        All cards are taken from the top.
-
-        3 cards needs to be not showed to players, last one is the beginning card.
-        I want to constantly show the cards on the table from top to bottom to player.
-        Each player is given 4 cards. Which cards each player will have can be predetermined.
-        Create two lists with size of 4 for each player.
-        Replace whichever card played with -1, that means there is no card.
-        There will be 6 rounds total as 48/8 is 6.
-        First 3 cards shouldn't be shown. This is requirement.
+        ♦10 is 3 points
+        ♣2 is 2 points
+        If ♦10 ♣2 are pisti, they are same as other pistis.
+            Variables that end with "Last" are to keep track of end of lists. Another solution would be to count
+        until reaching -1, this wouldn't require another variable. But I have concluded that
+        latter is easier to read and code with.
          */
+        
         int[] playerHand = new int[4];
         int[] opponentHand = new int[4];
         int[] playerCollectedCards = new int[52];
         int[] opponentCollectedCards = new int[52];
         int[] playerPistis = new int[52];
         int[] opponentPistis = new int[52];
-        int[] cardsOnTable = new int[52];
+        int[] board = new int[52];
+        int playerCollectedCardsLast = 0;
+        int opponentCollectedCardsLast = 0;
+        int playerPistisLast = 0;
+        int opponentPistisLast = 0;
+        int boardLast = 0;
+        int deckLast = 51;
+        for (int i = 0; i < 4; i++) {
+            board[i] = deck[deckLast];
+            deck[deckLast] = -1;
+            deckLast--;
+            boardLast++;
+        }
+        boolean firstCardsOut = false;
+        for (int set = 0; set < 6; set++) {
+            for (int i = 0; i < 4; i++) {
+                playerHand[i] = deck[deckLast];
+                deck[deckLast] = -1;
+                deckLast--;
+            }
+            for (int i = 0; i < 4; i++) {
+                opponentHand[i] = deck[deckLast];
+                deck[deckLast] = -1;
+                deckLast--;
+            }
+            for (int turn = 0; turn < 8; turn++) {
+                if (turn % 2 == 0) {
+                    for (int i = boardLast; i >= 0; i--) {
+                        // TODO look at this graph
+                        if ((i == 0 || i == 1 || i == 2) && firstCardsOut) System.out.print("**" + " ");
+                        else System.out.print(valueToSuitAndCard(board[i]) + " ");
+                    }
+                }
+                // Printing hand
+                for (int i = 0; i < 4; i++) {
+                    if (playerHand[i] != -1) System.out.println((i + 1) + " - " + valueToSuitAndCard(playerHand[i]));
+                    else System.out.println((i + 1) + " - already played");
+                }
+                // Ask player to play which card.
+                boolean continue_ = false;
+                int choosenCard = -1;
+                while (!continue_) {
+                    try {
+                        choosenCard = sc.nextInt();
+                        // Chosen number shouldn't be below 1, above 4 or shouldn't have been played (is not equal to -1) .
+                        if ((choosenCard < 1) || (choosenCard > 4) || (playerHand[choosenCard - 1] == -1)) System.out.println("Enter a valid number.");
+                        else {
+                            continue_ = true;
+                            // chosen card is one bigger than the actual index.
+                            choosenCard--;
+                        }
+                    } catch (Exception InputMismatchException) {
+                        System.out.println("Enter a valid number.");
+                    }
+                }
+                board[boardLast] = playerHand[choosenCard];
+                boardLast++;
+                playerHand[choosenCard] = -1;
 
-
+                // TODO this code can be shortened, a lot.
+                if (boardLast == 2) {
+                    if (board[1] % 13 == board[0] % 13) {
+                        for (int i = 0; i < 2; i++) {
+                            playerPistis[playerPistisLast + i] = board[boardLast - 1];
+                            boardLast--;
+                            playerPistisLast++;
+                            board[i] = -1;
+                        }
+                        firstCardsOut = true;
+                    }
+                    else if (board[1] % 13 == 10) {
+                        for (int i = 0; i < 2; i++) {
+                            playerCollectedCards[playerCollectedCardsLast + i] = board[boardLast - 1];
+                            boardLast--;
+                            playerCollectedCardsLast++;
+                            board[i] = -1;
+                        }
+                        firstCardsOut = true;
+                    }
+                } else if (boardLast > 2) {
+                    if (board[boardLast - 1] % 13 == board[boardLast - 2] % 13) {
+                        for (int i = 0; i < boardLast; i++) {
+                            playerCollectedCards[playerCollectedCardsLast + i] = board[i];
+                            playerPistisLast++;
+                            board[i] = -1;
+                        }
+                        boardLast = 0;
+                        firstCardsOut = true;
+                    }
+                    else if (board[boardLast - 1] % 13 == 10) {
+                        for (int i = 0; i < 2; i++) {
+                            playerCollectedCards[playerCollectedCardsLast + i] = board[boardLast - 1];
+                            playerCollectedCardsLast++;
+                            board[i] = -1;
+                        }
+                        boardLast = 0;
+                        firstCardsOut = true;
+                    }
+                }
+            }
+        }
     }
 
     public static void showHighScores() {
         // Requires I/O
-
     }
 
     public static int[] deckCut(int[] deck) {
