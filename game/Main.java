@@ -70,10 +70,10 @@ public class Main {
         System.out.println("Welcome, do you want to be the dealer?\n1 - Of course.\n2 - I'll pass this time.");
         int request = sc.nextInt();
 
-        if (request == 1) playerIsDealer = true;
-        else playerIsDealer = false;
+        // Witchcraft
+        playerIsDealer = request == 1;
 
-        if (playerIsDealer) System.out.println("You shuffled the deck.\nYour opponent to cut the deck.");
+        if (playerIsDealer) System.out.println("You shuffled the deck.\nYour opponent cut the deck.");
         else System.out.println("Your opponent shuffled the deck.\nYou randomly cut the deck.");
 
         // Creating the deck.
@@ -90,50 +90,71 @@ public class Main {
         ♦10 is 3 points
         ♣2 is 2 points
         If ♦10 ♣2 are pisti, they are same as other pistis.
-            Variables that end with "Last" are to keep track of end of lists. Another solution would be to count
+            Variables that end with "Last" are to keep track where the list continues. Another solution would be to count
         until reaching -1, this wouldn't require another variable. But I have concluded that
         latter is easier to read and code with.
          */
-        
         int[] playerHand = new int[4];
         int[] opponentHand = new int[4];
-        int[] playerCollectedCards = new int[52];
-        int[] opponentCollectedCards = new int[52];
-        int[] playerPistis = new int[52];
-        int[] opponentPistis = new int[52];
-        int[] board = new int[52];
+
+        int[] playerCollectedCards = new int[52];;
+        int[] opponentCollectedCards = new int[52];;
+        int[] playerPistis = new int[52];;
+        int[] opponentPistis = new int[52];;
+        int[] board = new int[52];;
+
+        for (int i = 0; i < 52; i++) playerCollectedCards[i] = -1;
+        for (int i = 0; i < 52; i++) opponentCollectedCards[i] = -1;
+        for (int i = 0; i < 52; i++) playerPistis[i] = -1;
+        for (int i = 0; i < 52; i++) opponentPistis[i] = -1;
+        for (int i = 0; i < 52; i++) board[i] = -1;
+
+
         int playerCollectedCardsLast = 0;
         int opponentCollectedCardsLast = 0;
         int playerPistisLast = 0;
         int opponentPistisLast = 0;
         int boardLast = 0;
         int deckLast = 51;
+
+        // First 4 cards are placed on board.
         for (int i = 0; i < 4; i++) {
             board[i] = deck[deckLast];
             deck[deckLast] = -1;
             deckLast--;
             boardLast++;
         }
+
+        // This variable is to hide first 3 cards until cards are taken from board once.
         boolean firstCardsOut = false;
+
+        // Game is played on 6 sets. Hands are given in the beginning of a set.
         for (int set = 0; set < 6; set++) {
+
+            // Giving player their cards.
             for (int i = 0; i < 4; i++) {
                 playerHand[i] = deck[deckLast];
                 deck[deckLast] = -1;
                 deckLast--;
             }
+
+            // Giving computer their cards.
             for (int i = 0; i < 4; i++) {
                 opponentHand[i] = deck[deckLast];
                 deck[deckLast] = -1;
                 deckLast--;
             }
-            for (int turn = 0; turn < 8; turn++) {
-                if (turn % 2 == 0) {
-                    for (int i = boardLast; i >= 0; i--) {
-                        // TODO look at this graph
-                        if ((i == 0 || i == 1 || i == 2) && firstCardsOut) System.out.print("**" + " ");
-                        else System.out.print(valueToSuitAndCard(board[i]) + " ");
-                    }
+
+            // Both player plays once every turn.
+            for (int turn = 0; turn < 4; turn++) {
+
+                // Prints the cards on board, last to first. Checks if first three are collected.
+                for (int i = boardLast - 1; i >= 0; i--) {
+                    if ((i == 0 || i == 1 || i == 2) && !firstCardsOut) System.out.print("**" + " ");
+                    else System.out.print(valueToSuitAndCard(board[i]) + " ");
                 }
+                System.out.println("\n");
+
                 // Printing hand
                 for (int i = 0; i < 4; i++) {
                     if (playerHand[i] != -1) System.out.println((i + 1) + " - " + valueToSuitAndCard(playerHand[i]));
@@ -164,36 +185,101 @@ public class Main {
                 if (boardLast == 2) {
                     if (board[1] % 13 == board[0] % 13) {
                         for (int i = 0; i < 2; i++) {
-                            playerPistis[playerPistisLast + i] = board[boardLast - 1];
-                            boardLast--;
-                            playerPistisLast++;
-                            board[i] = -1;
-                        }
-                        firstCardsOut = true;
-                    }
-                    else if (board[1] % 13 == 10) {
-                        for (int i = 0; i < 2; i++) {
-                            playerCollectedCards[playerCollectedCardsLast + i] = board[boardLast - 1];
-                            boardLast--;
-                            playerCollectedCardsLast++;
-                            board[i] = -1;
-                        }
-                        firstCardsOut = true;
-                    }
-                } else if (boardLast > 2) {
-                    if (board[boardLast - 1] % 13 == board[boardLast - 2] % 13) {
-                        for (int i = 0; i < boardLast; i++) {
-                            playerCollectedCards[playerCollectedCardsLast + i] = board[i];
+                            playerPistis[playerPistisLast] = board[i];
                             playerPistisLast++;
                             board[i] = -1;
                         }
                         boardLast = 0;
                         firstCardsOut = true;
                     }
-                    else if (board[boardLast - 1] % 13 == 10) {
+                    else if (board[1] % 13 == 10) {
                         for (int i = 0; i < 2; i++) {
-                            playerCollectedCards[playerCollectedCardsLast + i] = board[boardLast - 1];
+                            playerCollectedCards[playerCollectedCardsLast] = board[i];
                             playerCollectedCardsLast++;
+                            board[i] = -1;
+                        }
+                        boardLast = 0;
+                        firstCardsOut = true;
+                    }
+                }
+                else if (boardLast > 2) {
+                    if (board[boardLast - 1] % 13 == board[boardLast - 2] % 13) {
+                        for (int i = 0; i < boardLast; i++) {
+                            playerCollectedCards[playerCollectedCardsLast] = board[i];
+                            playerCollectedCardsLast++;
+                            board[i] = -1;
+                        }
+                        boardLast = 0;
+                        firstCardsOut = true;
+                    }
+                    else if (board[boardLast - 1] % 13 == 10) {
+                        for (int i = 0; i < boardLast; i++) {
+                            playerCollectedCards[playerCollectedCardsLast] = board[i];
+                            playerCollectedCardsLast++;
+                            board[i] = -1;
+                        }
+                        boardLast = 0;
+                        firstCardsOut = true;
+                    }
+                }
+
+                // Computer plays, currently randomly selects a card.
+                continue_ = false;
+                choosenCard = -1;
+                Random random = new Random();
+                while (!continue_) {
+                    try {
+                        // TODO Computer should be able to play for itself, currently randomly picks a card.
+                        choosenCard = random.nextInt(6);
+                        if ((choosenCard < 1) || (choosenCard > 4) || (opponentHand[choosenCard - 1] == -1)) System.out.print("");
+                        else {
+                            continue_ = true;
+                            choosenCard--;
+                        }
+                    } catch (Exception InputMismatchException) {
+                        System.out.println("CP! Enter a valid number.");
+                    }
+                }
+
+                // PC Chosen card is placed on board.
+                board[boardLast] = opponentHand[choosenCard];
+                boardLast++;
+                opponentHand[choosenCard] = -1;
+
+                if (boardLast == 2) {
+                    if (board[1] % 13 == board[0] % 13) {
+                        for (int i = 0; i < 2; i++) {
+                            opponentPistis[opponentPistisLast] = board[i];
+                            opponentPistisLast++;
+                            board[i] = -1;
+                        }
+                        boardLast = 0;
+                        firstCardsOut = true;
+                    }
+                    else if (board[1] % 13 == 10) {
+                        for (int i = 0; i < 2; i++) {
+                            opponentCollectedCards[opponentCollectedCardsLast] = board[i];
+                            opponentCollectedCardsLast++;
+                            board[i] = -1;
+                        }
+                        boardLast = 0;
+                        firstCardsOut = true;
+                    }
+                }
+                else if (boardLast > 2) {
+                    if (board[boardLast - 1] % 13 == board[boardLast - 2] % 13) {
+                        for (int i = 0; i < boardLast; i++) {
+                            opponentCollectedCards[opponentCollectedCardsLast] = board[i];
+                            opponentCollectedCardsLast++;
+                            board[i] = -1;
+                        }
+                        boardLast = 0;
+                        firstCardsOut = true;
+                    }
+                    else if (board[boardLast - 1] % 13 == 10) {
+                        for (int i = 0; i < boardLast; i++) {
+                            opponentCollectedCards[opponentCollectedCardsLast] = board[i];
+                            opponentCollectedCardsLast++;
                             board[i] = -1;
                         }
                         boardLast = 0;
@@ -296,6 +382,12 @@ public class Main {
         return suit + card;
     }
 
+    public static void printList(int[] list, String res) {
+        System.out.print(res + ": ");
+        for (int i : list) System.out.print(i + " ");
+        System.out.println();
+    }
+
     public static void deckShuffleTest() {
         // Used to test deckShuffle method. Useless at the moment.
         int[] deck = new int[52];
@@ -316,4 +408,5 @@ public class Main {
         // Used to test valueToCard method. Useless at the moment.
         for(int i = 0; i < 52; i++) System.out.print(valueToSuitAndCard(i) + " ");
     }
+
 }
