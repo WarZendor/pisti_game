@@ -36,6 +36,7 @@ public class Main {
         }
     }
 
+
     public static void newGame() {
         /*
         How to game should run?
@@ -128,6 +129,9 @@ public class Main {
         // This variable is to hide first 3 cards until cards are taken from board once.
         boolean firstCardsOut = false;
 
+        // This variable is to decide which player will have the remaining cards once the game is over.
+        boolean playerWillHaveRemainingCards = true;
+
         // Game is played on 6 sets. Hands are given in the beginning of a set.
         for (int set = 0; set < 6; set++) {
 
@@ -191,6 +195,7 @@ public class Main {
                         }
                         boardLast = 0;
                         firstCardsOut = true;
+                        playerWillHaveRemainingCards = true;
                     }
                     else if (board[1] % 13 == 10) {
                         for (int i = 0; i < 2; i++) {
@@ -200,6 +205,7 @@ public class Main {
                         }
                         boardLast = 0;
                         firstCardsOut = true;
+                        playerWillHaveRemainingCards = true;
                     }
                 }
                 else if (boardLast > 2) {
@@ -211,6 +217,7 @@ public class Main {
                         }
                         boardLast = 0;
                         firstCardsOut = true;
+                        playerWillHaveRemainingCards = true;
                     }
                     else if (board[boardLast - 1] % 13 == 10) {
                         for (int i = 0; i < boardLast; i++) {
@@ -220,6 +227,7 @@ public class Main {
                         }
                         boardLast = 0;
                         firstCardsOut = true;
+                        playerWillHaveRemainingCards = true;
                     }
                 }
 
@@ -255,6 +263,7 @@ public class Main {
                         }
                         boardLast = 0;
                         firstCardsOut = true;
+                        playerWillHaveRemainingCards = false;
                     }
                     else if (board[1] % 13 == 10) {
                         for (int i = 0; i < 2; i++) {
@@ -264,6 +273,7 @@ public class Main {
                         }
                         boardLast = 0;
                         firstCardsOut = true;
+                        playerWillHaveRemainingCards = false;
                     }
                 }
                 else if (boardLast > 2) {
@@ -275,6 +285,7 @@ public class Main {
                         }
                         boardLast = 0;
                         firstCardsOut = true;
+                        playerWillHaveRemainingCards = false;
                     }
                     else if (board[boardLast - 1] % 13 == 10) {
                         for (int i = 0; i < boardLast; i++) {
@@ -284,12 +295,59 @@ public class Main {
                         }
                         boardLast = 0;
                         firstCardsOut = true;
+                        playerWillHaveRemainingCards = false;
                     }
                 }
             }
         }
-    }
 
+        // Remaining cards go to whoever got cards last.
+        if (playerWillHaveRemainingCards) {
+            for (int i = 0; i < boardLast; i++) {
+                playerCollectedCards[playerCollectedCardsLast] = board[i];
+                playerCollectedCardsLast++;
+                board[i] = -1;
+            }
+        } else {
+            for (int i = 0; i < boardLast; i++) {
+                opponentCollectedCards[opponentCollectedCardsLast] = board[i];
+                opponentCollectedCardsLast++;
+                board[i] = -1;
+            }
+        }
+
+        // Calculating scores
+        int playerScore = 0;
+        int opponentScore = 0;
+
+        playerScore+=playerPistisLast * 5;
+        opponentScore+=opponentPistisLast * 5;
+
+        for (int card : playerCollectedCards) {
+            if (valueToSuitAndCard(card).equals("♦10")) playerScore+=3;
+            else if (valueToSuitAndCard(card).equals("♣2")) playerScore+=2;
+            else if (card != -1) playerScore+=1;
+        }
+        for (int card : opponentCollectedCards) {
+            if (valueToSuitAndCard(card).equals("♦10")) opponentScore+=3;
+            else if (valueToSuitAndCard(card).equals("♣2")) opponentScore+=2;
+            else if (card != -1) opponentScore+=1;
+        }
+
+        // Add 3 points whoever collected more cards.
+        if (playerPistisLast + playerCollectedCardsLast > opponentPistisLast + opponentCollectedCardsLast) playerScore+=3;
+        else if (playerPistisLast + playerCollectedCardsLast < opponentPistisLast + opponentCollectedCardsLast) opponentScore+=3;
+
+        System.out.println("Your score: " + playerScore);
+        System.out.println("Opponent score: " + opponentScore);
+        System.out.println();
+        if (playerScore > opponentScore) System.out.println("You win!");
+        else if (playerScore < opponentScore) System.out.println("You lost!");
+        else System.out.println("How unusual, it is a draw!");
+
+        System.out.println("\n Thanks for playing!\n\n");
+    }
+    
     public static void showHighScores() {
         // Requires I/O
     }
