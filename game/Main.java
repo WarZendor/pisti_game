@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Formatter;
 import java.nio.file.Paths;
 
 public class Main {
@@ -196,14 +197,6 @@ public class Main {
                     // Computer plays
 
                     // Computer checks its hand. If there is a card that matches with top card, plays it
-
-                    System.out.println("--------");
-                    for (int i:
-                         opponentHand) {
-                        System.out.print(valueToSuitAndCard(i) + " ");
-                    }
-                    System.out.println("--------");
-
                     chosenCard = -1;
                     if (boardLast > 0) {
                         for (int i = 0; i < 4; i++) {
@@ -278,11 +271,6 @@ public class Main {
                         firstCardsOut = true;
                         playerWillHaveRemainingCards = false;
                     }
-
-                    printList(opponentPistis, "Opponent pistis");
-                    printList(opponentCollectedCards, "Opponent collected Cards");
-                    printList(playerPistis, "Player pistis");
-                    printList(playerCollectedCards, "Player collected cards");
                 }
             }
             else {
@@ -517,10 +505,27 @@ public class Main {
                 System.out.println("Please enter your name:");
                 scores[i] = playerScore;
                 names[i] = sc.nextLine();
-                printList(names, "NAMES");
-                printList(scores, "SCORES");
-
-                
+                Formatter f = null;
+                try{
+                    f = new Formatter("highScores.txt");
+                    String write =
+                            names[0] + "," + scores[0] + "\n" +
+                            names[1] + "," + scores[1] + "\n" +
+                            names[2] + "," + scores[2] + "\n" +
+                            names[3] + "," + scores[3] + "\n" +
+                            names[4] + "," + scores[4] + "\n" +
+                            names[5] + "," + scores[5] + "\n" +
+                            names[6] + "," + scores[6] + "\n" +
+                            names[7] + "," + scores[7] + "\n" +
+                            names[8] + "," + scores[8] + "\n" +
+                            names[9] + "," + scores[9] + "\n";
+                            f.format(write);
+                } catch (Exception e) {
+                    System.err.println("Something went wrong");
+                } finally {
+                    if (f != null) f.close();
+                }
+                showHighScores();
                 break;
             }
         }
