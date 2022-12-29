@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.File;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -7,6 +8,7 @@ import java.nio.file.Paths;
 
 public class Main {
     public static void main(String[] args) {
+        checkForHighScoresTxt();
         Scanner sc = new Scanner(System.in);
         boolean continue_ = true;
         int request;
@@ -504,9 +506,16 @@ public class Main {
                 }
                 System.out.println("Please enter your name:");
                 scores[i] = playerScore;
+                String playerName;
+                do {
+                    playerName = sc.nextLine();
+                    if (playerName.contains(",")) System.out.println("You can't use \",\" in your name.\nPlease enter your name:");
+                    if (playerName.isBlank()) System.out.println("Your name can't be blank.\nPlease enter your name:");
+                } while (playerName.contains(",") || playerName.isBlank());
+
                 names[i] = sc.nextLine();
                 Formatter f = null;
-                try{
+                try {
                     f = new Formatter("highScores.txt");
                     String write =
                             names[0] + "," + scores[0] + "\n" +
@@ -649,6 +658,37 @@ public class Main {
             } catch (NumberFormatException e) {
                 System.out.println("Enter a valid number from " + beginning + " to " + end + ".");
             }
+        }
+    }
+
+    public static void checkForHighScoresTxt() {
+        File myObj = null;
+        try {
+            myObj = new File("highScores.txt");
+            if (myObj.createNewFile()) {
+                Formatter f = null;
+                try {
+                    f = new Formatter("highScores.txt");
+                    String write = "ABIGAIL,100\n" +
+                            "ELLIOT,90\n" +
+                            "ALEX,80\n" +
+                            "LEWIS,70\n" +
+                            "PAM,60\n" +
+                            "SEBASTIAN,50\n" +
+                            "DEMETRIUS,40\n" +
+                            "WIZARD,30\n" +
+                            "GEORGE,20\n" +
+                            "PIERRE,10\n";
+                    f.format(write);
+                } catch (Exception e) {
+                    System.err.println("Something went wrong");
+                } finally {
+                    if (f != null) f.close();
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
         }
     }
 }
