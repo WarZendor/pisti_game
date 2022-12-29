@@ -11,7 +11,7 @@ public class Main {
         boolean continue_ = true;
         int request;
         while (continue_) {
-            System.out.println("\nPISTI\n\n1 - New Game Against AI\n2 - See High Scores\n3 - Exit\n");
+            System.out.println("\nPISTI\n\n1 - New Game\n2 - See High Scores\n3 - Exit\n");
             request = intInput(1, 3, sc);
             switch (request) {
                 case 1:
@@ -32,7 +32,7 @@ public class Main {
 
     public static void newGame(Scanner sc) {
         /*
-        Cards can be tied to different values
+        Cards are tied to different values
         Order of suits: ♠♥♣♦
         Order of numbers: A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K
 
@@ -63,7 +63,7 @@ public class Main {
         else {
             System.out.println("Your opponent shuffled the deck. Press Enter to continue");
             sc.nextLine();
-            System.out.println("You randomly cut the deck.  Press Enter to continue");
+            System.out.println("You randomly cut the deck. Press Enter to continue");
             sc.nextLine();
         }
 
@@ -83,7 +83,7 @@ public class Main {
         If ♦10 ♣2 are pisti they are same as other pistis thus has no extra points.
             Variables that end with "Last" are to keep track where from the list will continue.
             Another solution would be to count until reaching -1, this wouldn't require another variable.
-            But through experience I have concluded that former is way easier to read and code with.
+            But through experience I have concluded that former is easier to read and code with.
          */
 
         int[] playerHand = new int[4];
@@ -651,38 +651,4 @@ public class Main {
             }
         }
     }
-
-    public static void printList(int[] list, String res) {
-        System.out.print(res + ": ");
-        for (int i : list) System.out.print(i + " ");
-        System.out.println();
-    }
-
-    public static void printList(String[] list, String res) {
-        System.out.print(res + ": ");
-        for (String i : list) System.out.print(i + " ");
-        System.out.println();
-    }
-
-    public static void deckShuffleTest() {
-        // Used to test deckShuffle method. Useless at the moment.
-        int[] deck = new int[52];
-        for (int i = 0; i < deck.length; i++) deck[i] = i;
-
-        for (int i = 0; i < 5; i++) {
-            deck = deckShuffle(deck);
-            int total = 0;
-            for (int j = 0; j < deck.length; j++) {
-                total+=deck[j];
-                System.out.print(deck[j] + " ");
-            }
-            System.out.println(total);
-        }
-    }
-
-    public static void valueToCardTest() {
-        // Used to test valueToCard method. Useless at the moment.
-        for(int i = 0; i < 52; i++) System.out.print(valueToSuitAndCard(i) + " ");
-    }
-
 }
