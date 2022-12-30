@@ -1,5 +1,5 @@
 import java.io.IOException;
-import java.io.File;
+import java.io.FileWriter;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -251,6 +251,7 @@ public class Main {
                     }
                     chosenCard--;
                     board[boardLast] = opponentHand[chosenCard];
+                    System.out.println("Your opponent played: " + valueToSuitAndCard(board[boardLast]));
                     boardLast++;
                     opponentHand[chosenCard] = -1;
 
@@ -346,6 +347,7 @@ public class Main {
                     }
                     chosenCard--;
                     board[boardLast] = opponentHand[chosenCard];
+                    System.out.println("Your opponent played: " + valueToSuitAndCard(board[boardLast]));
                     boardLast++;
                     opponentHand[chosenCard] = -1;
 
@@ -506,14 +508,16 @@ public class Main {
                 }
                 System.out.println("Please enter your name:");
                 scores[i] = playerScore;
-                String playerName;
+                String playerName = "";
                 do {
-                    playerName = sc.nextLine();
-                    if (playerName.contains(",")) System.out.println("You can't use \",\" in your name.\nPlease enter your name:");
-                    if (playerName.isBlank()) System.out.println("Your name can't be blank.\nPlease enter your name:");
-                } while (playerName.contains(",") || playerName.isBlank());
+                    if (playerName.contains(",") || playerName.isBlank() || playerName.length() > 10) playerName = sc.nextLine();
+                    if (playerName.contains(",")) System.out.println("You can't use \",\" in your name.");
+                    if (playerName.isBlank()) System.out.println("Your name can't be blank.");
+                    if (playerName.length() > 10) System.out.println("Your name can't be longer than 10 characters.");
+                    if (playerName.contains(",") || playerName.isBlank() || playerName.length() > 10) System.out.println("\nPlease enter your name:");
+                } while (playerName.contains(",") || playerName.isBlank() || playerName.length() > 10);
 
-                names[i] = sc.nextLine();
+                names[i] = playerName;
                 Formatter f = null;
                 try {
                     f = new Formatter("highScores.txt");
@@ -528,7 +532,7 @@ public class Main {
                             names[7] + "," + scores[7] + "\n" +
                             names[8] + "," + scores[8] + "\n" +
                             names[9] + "," + scores[9] + "\n";
-                            f.format(write);
+                    f.format(write);
                 } catch (Exception e) {
                     System.err.println("Something went wrong");
                 } finally {
@@ -662,33 +666,35 @@ public class Main {
     }
 
     public static void checkForHighScoresTxt() {
-        File myObj = null;
+
+        // Checking if highScores.txt exists.
+        boolean exists = false;
+        Scanner reader = null;
         try {
-            myObj = new File("highScores.txt");
-            if (myObj.createNewFile()) {
-                Formatter f = null;
-                try {
-                    f = new Formatter("highScores.txt");
-                    String write = "ABIGAIL,100\n" +
-                            "ELLIOT,90\n" +
-                            "ALEX,80\n" +
-                            "LEWIS,70\n" +
-                            "PAM,60\n" +
-                            "SEBASTIAN,50\n" +
-                            "DEMETRIUS,40\n" +
-                            "WIZARD,30\n" +
-                            "GEORGE,20\n" +
-                            "PIERRE,10\n";
-                    f.format(write);
-                } catch (Exception e) {
-                    System.err.println("Something went wrong");
-                } finally {
-                    if (f != null) f.close();
+            reader = new Scanner(Paths.get("highScores.txt"));
+            exists = true;
+        } catch (IOException ignored) {
+        } finally {
+            if (reader != null) reader.close();
+        }
+
+        if (!exists) {
+            FileWriter fw = null;
+            Formatter f = null;
+            try {
+                fw = new FileWriter("highScores.txt", true);
+                f = new Formatter(fw);
+                String defaults = " ,-1\n ,-1\n ,-1\n ,-1\n ,-1\n ,-1\n ,-1\n ,-1\n ,-1\n ,-1\n";
+                f.format(defaults);
+                fw.close();
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            } finally {
+                if (f != null)  {
+                    f.close();
                 }
             }
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
         }
     }
 }
